@@ -1,2 +1,10 @@
 # interstategamers-backend
-This repo contains the backend code for The Interstate Gamers website. It utilizes firebase functions.
+This repo contains the backend code for The Interstate Gamers website. It is designed to be ran on a cron job on a secure server.
+
+- NOTE: You need to set the GOOGLE_APPLICATION_CREDENTIALS shell environment variable to the file location of the service account key code
+
+SETUP:
+- Download repo
+- Navigate to root repository directory
+- Run npm i
+- Run node index.js
