@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "ES6",
+    "esModuleInterop": true,
+    "target": "ES6",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "outDir": "dist"
+  },
+  "typeRoots": [
+      "node_modules/@types"
+  ],
+  "lib": [
+      "es2018",
+      "dom"
+  ],
+  "include": ["src/**/*"],
+}

@@ -2,11 +2,16 @@
   "name": "interstategamers-backend",
   "version": "1.0.0",
   "description": "A nodejs application containing the backend code for the interstate gamers website",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kdevcse/interstategamers-backend.git"
+  },
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build": "npm run clean && tsc",
+    "start": "node ./dist/index.js"
   },
   "author": "klewiscse",
   "license": "MIT",
@@ -18,5 +23,9 @@
     "firebase": "^9.6.5",
     "firebase-admin": "^10.0.2",
     "node-fetch": "^3.2.0"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "^4.5.5"
   }
 }
