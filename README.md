@@ -7,4 +7,6 @@ SETUP:
 - Download repo
 - Navigate to root repository directory
 - Run npm i
-- Run node index.js
+- Set GOOGLE_APPLICATION_CREDENTIALS environment variable
+- Run 'node run build'
+- Run 'node run start'
