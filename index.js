@@ -1,20 +1,12 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const fetch = require('node-fetch');
+import { applicationDefault } from "firebase-admin/app";
+import admin from 'firebase-admin';
+import fetch from 'node-fetch';
 
-admin.initializeApp();
-
-/*Global*/
-const runtimeOpts = {
-  timeoutSeconds: 30,
-  memory: '512MB'
-};
-
-async function updateData(data, collection) {
+async function updateData(app, data, collection) {
   if (!data)
     return;
 
-  var collectionRef = admin.firestore().collection(collection);
+  var collectionRef = app.firestore().collection(collection);
   
   await collectionRef.get().then((c) => {
     for (let i = 0; i < data.length; i++) {
@@ -26,7 +18,7 @@ async function updateData(data, collection) {
     }
     return;
   }).catch((error) => {
-    functions.logger.warn(`Error updating data: ${error}`);
+    console.log(`Error updating data: ${error}`);
   });
   
 }
@@ -43,12 +35,12 @@ async function getSimplecastData (url, podKey) {
     const data = res.json();
     return data;
   } catch (error) {
-    functions.logger.warn(`Error making Simplecast request: ${error}`);
+    console.log(`Error making Simplecast request: ${error}`);
     return null;
   }
 }
 
-async function updatedSimplecastData(apiKeys){
+async function updatedSimplecastData(app, apiKeys){
   var updatedSimplecastData = [];
   var url = `https://api.simplecast.com/podcasts/${apiKeys.simplecast_id}/episodes`;
   var simplecastData = await getSimplecastData(url, apiKeys.simplecast_key);
@@ -71,7 +63,7 @@ async function updatedSimplecastData(apiKeys){
     count++;
   }
 
-  updateData(updatedSimplecastData, 'podcast-data');
+  updateData(app, updatedSimplecastData, 'podcast-data');
   console.log('Episodes successfully imported from Simplecast');
   return updatedSimplecastData;
 }
@@ -91,7 +83,7 @@ function correctAirtableObjectPropertyNames(dataObj) {
   return rData;
 }
 
-async function updatedAirtableData(apiKeys, simplecastData) {
+async function updatedAirtableData(app, apiKeys, simplecastData) {
   var url = `https://api.airtable.com/v0/appDCLBXIkefciEz4/Ratings?api_key=${apiKeys.airtable_key}`;
   const airtableResponse = await fetch(url, {method: 'get'});
   const airtableResponseData = await airtableResponse.json();
@@ -109,18 +101,18 @@ async function updatedAirtableData(apiKeys, simplecastData) {
 
     rankings.push(rData);
   }
-  updateData(rankings, 'ratings-data');
+  updateData(app, rankings, 'ratings-data');
   console.log('Ratings successfully imported from AirTable');
 }
 
 /*Main Function*/
-
-//exports.updatePodcastData = functions.runWith(runtimeOpts).https.onRequest(async (request, response) => {
-exports.updatePodcastData = functions.pubsub.schedule('50 7 * * *').timeZone('America/Chicago')
-.onRun(async (context) => {
-  try { 
-    var apiKeysColl = await admin.firestore().collection('api-keys').get().catch(error => {
-      functions.logger.warn(`Error retrieving api key: ${error}`);
+async function mainFunc() {
+  try {
+    const app = admin.initializeApp({
+      credential: applicationDefault()
+    });
+    var apiKeysColl = await app.firestore().collection('api-keys').get().catch(error => {
+      console.log(`Error retrieving api key: ${error}`);
     });
 
     if (!apiKeysColl || !apiKeysColl.docs[0])
@@ -128,12 +120,14 @@ exports.updatePodcastData = functions.pubsub.schedule('50 7 * * *').timeZone('Am
 
     var apiKeys = apiKeysColl.docs[0].data();
 
-    const simplecastData = await updatedSimplecastData(apiKeys);
-    await updatedAirtableData(apiKeys, simplecastData);
+    const simplecastData = await updatedSimplecastData(app, apiKeys);
+    await updatedAirtableData(app, apiKeys, simplecastData);
 
-    //response.send('Import successful'); --Debug Only
+    console.log('Import successful');
   } catch(e) {
-    functions.logger.warn(`Error occurred while trying to update podcast data: ${e}`);
-    //response.send('Import Failed'); --Debug Only
+    console.log(`Error occurred while trying to update podcast data: ${e}`);
+    console.log('Import Failed');
   }
-});
+};
+
+mainFunc();
