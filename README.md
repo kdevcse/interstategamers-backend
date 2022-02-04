@@ -7,7 +7,6 @@ This repo contains the backend code for The Interstate Gamers website. It is des
 - Download repo
 - Navigate to root repository directory
 - Run npm i
-- Set GOOGLE_APPLICATION_CREDENTIALS environment variable
 - Run 'node run build'
 - Set the [GOOGLE_APPLICATION_CREDENTIALS](https://firebase.google.com/docs/admin/setup#linux-or-macos) shell environment variable to the file location of the service account key code.
 - Run 'node run start'
