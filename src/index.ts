@@ -33,6 +33,6 @@ async function mainFunc() {
       `Simplecast and Airtable info FAILED to import into the IG database\n\n${e}`,
       DiscordColors.Error);
   }
-};
+}
 
 await mainFunc();
