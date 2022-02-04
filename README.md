@@ -1,4 +1,4 @@
-# The Interstategamers Server
+# The Interstate Gamers Server
 This repo contains the backend code for The Interstate Gamers website. It is designed to be ran on a cron job on a secure server. It works in conjunction with [The Interstate Gamers Website Repo](https://github.com/kdevcse/interstategamers).
 
 [![CodeFactor](https://www.codefactor.io/repository/github/kdevcse/interstategamers-backend/badge/main)](https://www.codefactor.io/repository/github/kdevcse/interstategamers-backend/overview/main)
