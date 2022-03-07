@@ -11,11 +11,12 @@ async function mainFunc() {
   const discordClient = new DiscordClient(process.env.DISCORD_WEBHOOK_ID, process.env.DISCORD_WEBHOOK_TOKEN);
   const simplecastClient = new SimplecastClient(process.env.SIMPLECAST_ID, process.env.SIMPLECAST_KEY);
   const airtableClient = new AirtableClient(process.env.AIRTBALE_KEY, process.env.AIRTABLE_APP_ID);
+  const firebaseClient = new FirebaseClient();
 
   try {
-    const firebaseClient = new FirebaseClient();
     const simplecastData = await simplecastClient.getSimplecastData();
     firebaseClient.updateData(simplecastData, CollectionType.EPISODE);
+    
     const airtableData = await airtableClient.getAirtableData(simplecastData);
     firebaseClient.updateData(airtableData, CollectionType.RATINGS);
 
