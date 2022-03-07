@@ -1,7 +1,5 @@
-import admin from 'firebase-admin';
 import { IAirtableRecord, IAirtableResponse } from '../interfaces/airtable-api';
 import { IEpisodeInfo, IRankingInfo } from '../interfaces/episode-info';
-import { updateData } from './utility-functions.js';
 import fetch from 'node-fetch';
 
 export class AirtableClient {
@@ -29,11 +27,11 @@ export class AirtableClient {
     return rData as IRankingInfo;
   }
 
-  async updatedAirtableData(app: admin.app.App, simplecastData: IEpisodeInfo[]) {
+  async getAirtableData(simplecastData: IEpisodeInfo[]): Promise<IRankingInfo[]> {
     var url = `https://api.airtable.com/v0/${this.AirtableId}/Ratings?api_key=${this.AirtableKey}`;
     const airtableResponse = await fetch(url, {method: 'get'});
     const airtableResponseData = await airtableResponse.json() as IAirtableResponse;
-    var rankings = [];
+    var rankings: IRankingInfo[] = [];
     for(let i = 0; i < airtableResponseData.records.length; i++) {
       var rData = this.correctAirtableObjectPropertyNames(airtableResponseData.records[i]);
   
@@ -46,7 +44,6 @@ export class AirtableClient {
   
       rankings.push(rData);
     }
-    updateData(app, rankings, 'ratings-data');
-    console.log('Ratings successfully imported from AirTable');
+    return rankings;
   }
 }

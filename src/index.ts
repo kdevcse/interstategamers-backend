@@ -1,10 +1,9 @@
 import 'dotenv/config.js';
-import { applicationDefault } from "firebase-admin/app";
-import admin from 'firebase-admin';
 import { SimplecastClient } from "./utilities/simplecast-client.js";
 import { AirtableClient } from "./utilities/airtable-client.js";
 import { DiscordClient } from "./utilities/discord-client.js";
 import { DiscordColors } from "./interfaces/discord-api.js";
+import { CollectionType, FirebaseClient } from './utilities/firebase-client.js';
 
 /*Main Function*/
 async function mainFunc() {
@@ -14,9 +13,11 @@ async function mainFunc() {
   const airtableClient = new AirtableClient(process.env.AIRTBALE_KEY, process.env.AIRTABLE_APP_ID);
 
   try {
-    const app = admin.initializeApp({credential: applicationDefault()});
-    const simplecastData = await simplecastClient.updatedSimplecastData(app);
-    await airtableClient.updatedAirtableData(app, simplecastData);
+    const firebaseClient = new FirebaseClient();
+    const simplecastData = await simplecastClient.getSimplecastData();
+    firebaseClient.updateData(simplecastData, CollectionType.EPISODE);
+    const airtableData = await airtableClient.getAirtableData(simplecastData);
+    firebaseClient.updateData(airtableData, CollectionType.RATINGS);
 
     console.log('Import successful');
 

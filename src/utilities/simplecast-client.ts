@@ -1,7 +1,5 @@
-import admin from 'firebase-admin';
 import { IEpisodeInfo } from '../interfaces/episode-info';
 import { ISimplecastApiResponse } from '../interfaces/simplecast-api';
-import { updateData } from './utility-functions.js';
 import fetch from 'node-fetch';
 
 export class SimplecastClient {
@@ -14,7 +12,7 @@ export class SimplecastClient {
         this.SimplecastApiKey = simplecastApiKey;
     }
 
-    private async getSimplecastData (url: string, podKey: string): Promise<ISimplecastApiResponse> {
+    private async requestSimplecastData (url: string, podKey: string): Promise<ISimplecastApiResponse> {
         try {
             const header = { 'authorization' : `Bearer ${podKey}` };
             const res = await fetch(url, {
@@ -29,10 +27,10 @@ export class SimplecastClient {
         }
     }    
 
-    async updatedSimplecastData(app: admin.app.App): Promise<IEpisodeInfo[]> {
+    async getSimplecastData(): Promise<IEpisodeInfo[]> {
         var updatedSimplecastData: IEpisodeInfo[] = [];
         var url = `https://api.simplecast.com/podcasts/${this.SimplecastApiId}/episodes`;
-        var simplecastData = await this.getSimplecastData(url, this.SimplecastApiKey);
+        var simplecastData = await this.requestSimplecastData(url, this.SimplecastApiKey);
       
         if (!simplecastData)
           return updatedSimplecastData;
@@ -43,7 +41,7 @@ export class SimplecastClient {
         var count = 0;
         while (simplecastData && simplecastData.pages.next && count < total) {
           // eslint-disable-next-line no-await-in-loop
-          simplecastData = await this.getSimplecastData(simplecastData.pages.next.href, this.SimplecastApiKey);
+          simplecastData = await this.requestSimplecastData(simplecastData.pages.next.href, this.SimplecastApiKey);
       
           if (!simplecastData)
             return updatedSimplecastData;
@@ -52,7 +50,6 @@ export class SimplecastClient {
           count++;
         }
       
-        updateData(app, updatedSimplecastData, 'podcast-data');
         console.log('Episodes successfully imported from Simplecast');
         return updatedSimplecastData;
     }
