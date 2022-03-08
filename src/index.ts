@@ -3,7 +3,6 @@ import { SimplecastClient } from "./utilities/simplecast-client.js";
 import { AirtableClient } from "./utilities/airtable-client.js";
 import { DiscordClient } from "./utilities/discord-client.js";
 import { DiscordColors } from "./interfaces/discord-api.js";
-import { CollectionType, FirebaseClient } from './utilities/firebase-client.js';
 import { MySupabaseClient } from './utilities/supabase-client.js';
 
 /*Main Function*/
@@ -13,14 +12,11 @@ async function mainFunc() {
   const simplecastClient = new SimplecastClient(process.env.SIMPLECAST_ID, process.env.SIMPLECAST_KEY);
   const airtableClient = new AirtableClient(process.env.AIRTBALE_KEY, process.env.AIRTABLE_APP_ID);
   const supabaseClient = new MySupabaseClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-  //const firebaseClient = new FirebaseClient();
 
   try {
     const simplecastData = await simplecastClient.getSimplecastData();
-    //firebaseClient.updateData(simplecastData, CollectionType.EPISODE);
 
     const airtableData = await airtableClient.getAirtableData(simplecastData);
-    //firebaseClient.updateData(airtableData, CollectionType.RATINGS);
 
     await supabaseClient.updateTables(simplecastData, airtableData);
     console.log('Import successful');
