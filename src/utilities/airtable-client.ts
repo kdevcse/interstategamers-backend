@@ -20,7 +20,7 @@ export class AirtableClient {
       var newKeyName = key.toLowerCase().replace(' ', '_').replace('.','');
       newKeyName = newKeyName.includes('kevin\'s') ? newKeyName.replace('kevin\'s', 'k') : newKeyName;
       newKeyName = newKeyName.includes('peter\'s') ? newKeyName.replace('peter\'s', 'p') : newKeyName;
-      newKeyName = newKeyName.includes('guest') ? newKeyName.replace('guest', 'g') : newKeyName;
+      newKeyName = newKeyName.includes('guest_rating') ? newKeyName.replace('guest', 'g') : newKeyName;
       rData[newKeyName] = dataObj.fields[key];
     });
   
@@ -44,6 +44,7 @@ export class AirtableClient {
   
       rankings.push(rData);
     }
+    console.log('Ratings successfully imported from AirTable');
     return rankings;
   }
 }
