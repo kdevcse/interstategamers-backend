@@ -47,14 +47,14 @@ export class MySupabaseClient {
       simplecast_id: simplecastId
     };
     
-    const { data, error } = await this.Client.from(SupabaseTables.RATINGS).upsert([dataToUpsert], { ignoreDuplicates: false });
+    const { data, error } = await this.Client.from(SupabaseTables.RATINGS).upsert([dataToUpsert], { ignoreDuplicates: true });
 
     if (error) {
       console.error(error);
       throw Error(`Error upserting ratings for overall: ${error.message}`);
     }
 
-    return data[0].id as number;
+    return data[0]?.id as number;
   }
 
   async updateTables(episodes: IEpisodeInfo[], ratings: IRankingInfo[]) {
@@ -85,7 +85,7 @@ export class MySupabaseClient {
         days_since_release: episode.days_since_release,
         enclosure_url: episode.enclosure_url,
         ratings_id: ratingsTableId
-      } as SupabaseEpisodes], { ignoreDuplicates: false });
+      } as SupabaseEpisodes], { ignoreDuplicates: true });
 
       if (error) {
         console.error(error);
