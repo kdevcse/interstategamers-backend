@@ -1,10 +1,9 @@
 import 'dotenv/config.js';
-import { applicationDefault } from "firebase-admin/app";
-import admin from 'firebase-admin';
 import { SimplecastClient } from "./utilities/simplecast-client.js";
 import { AirtableClient } from "./utilities/airtable-client.js";
 import { DiscordClient } from "./utilities/discord-client.js";
 import { DiscordColors } from "./interfaces/discord-api.js";
+import { MySupabaseClient } from './utilities/supabase-client.js';
 
 /*Main Function*/
 async function mainFunc() {
@@ -12,12 +11,14 @@ async function mainFunc() {
   const discordClient = new DiscordClient(process.env.DISCORD_WEBHOOK_ID, process.env.DISCORD_WEBHOOK_TOKEN);
   const simplecastClient = new SimplecastClient(process.env.SIMPLECAST_ID, process.env.SIMPLECAST_KEY);
   const airtableClient = new AirtableClient(process.env.AIRTBALE_KEY, process.env.AIRTABLE_APP_ID);
+  const supabaseClient = new MySupabaseClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   try {
-    const app = admin.initializeApp({credential: applicationDefault()});
-    const simplecastData = await simplecastClient.updatedSimplecastData(app);
-    await airtableClient.updatedAirtableData(app, simplecastData);
+    const simplecastData = await simplecastClient.getSimplecastData();
 
+    const airtableData = await airtableClient.getAirtableData(simplecastData);
+
+    await supabaseClient.updateTables(simplecastData, airtableData);
     console.log('Import successful');
 
     discordClient.postToDiscord(

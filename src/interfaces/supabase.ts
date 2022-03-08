@@ -1,0 +1,60 @@
+
+export interface SupabaseEpisodes {
+  simplecast_id: string,
+  title: string,
+  description: string,
+  season: number,
+  number: number,
+  href: string,
+  guid: string,
+  published_at: Date,
+  updated_at: Date,
+  type: string,
+  status: string,
+  is_hidden: boolean,
+  image_url: string,
+  image_path: string,
+  days_since_release: number,
+  enclosure_url: string,
+  ratings_id?: number
+}
+
+export interface SupabaseRatingsOverall {
+  id: string,
+  gameplay: number,
+  audio: number,
+  visuals: number,
+  aesthetics: number,
+  content: number,
+  ig_score: number,
+  game: string,
+  platform: string,
+  year: number,
+  k_gameplay: number,
+  k_audio: number,
+  k_visuals: number,
+  k_aesthetics: number,
+  k_content: number,
+  k_rating: number,
+  p_gameplay: number,
+  p_audio: number,
+  p_visuals: number,
+  p_aesthetics: number,
+  p_content: number,
+  p_rating: number,
+  g_gameplay?: number,
+  g_audio?: number,
+  g_visuals?: number,
+  g_aesthetics?: number,
+  g_content?: number,
+  g_rating?: number,
+  guest?: string,
+  ign: number,
+  metacritic: number,
+  simplecast_id: string
+}
+
+export enum SupabaseTables {
+  SIMPLECAST_EPISODES = "episodes_simplecast",
+  RATINGS = "ratings",
+}
